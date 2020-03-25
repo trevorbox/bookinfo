@@ -1,0 +1,40 @@
+---
+- name: install bookinfo application
+  hosts: localhost
+  vars:
+    - k8s_namespace: bookinfo
+    - istio_src_dir: istio
+    - app_src_dir: app
+  tasks:
+    - name: Create a k8s namespace
+      k8s:
+        name: "{{ k8s_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Discover app deployment files
+      find:                             
+        paths: "{{ app_src_dir }}"    
+        patterns: "*.yml,*.yaml"        
+      register: app_files
+
+    - name: Deploy bookinfo app
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        src: "{{ item.path }}"
+      loop: "{{ app_files.files }}"
+
+    - name: Discover istio deployment files
+      find:
+        paths: "{{ istio_src_dir }}"
+        patterns: "*.yml,*.yaml"
+      register: istio_files
+      
+    - name: Deploy istio gateway, virtualservices, and destinationrules for bookinfo app
+      k8s:
+        state: present                                                  
+        namespace: "{{ k8s_namespace }}"                                
+        src: "{{ item.path }}"
+      loop: "{{ istio_files.files }}"
