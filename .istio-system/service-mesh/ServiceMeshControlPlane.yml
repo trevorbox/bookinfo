@@ -2,7 +2,6 @@ apiVersion: maistra.io/v1
 kind: ServiceMeshControlPlane
 metadata:
   name: mtls-install
-  namespace: istio-system
 spec:
   istio:
     gateways:

@@ -1,0 +1,26 @@
+---
+- name: install service mesh control plane configs
+  hosts: localhost
+  vars:
+    - k8s_namespace: istio-system
+    - service_mesh_src_dir: service-mesh
+  tasks:
+    - name: Create a k8s namespace
+      k8s:
+        name: "{{ k8s_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Discover service mesh deployment files
+      find:
+        paths: "{{ service_mesh_src_dir }}"
+        patterns: "*.yml,*.yaml"
+      register: sm_files
+
+    - name: Deploy service mesh
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        src: "{{ item.path }}"
+      loop: "{{ sm_files.files }}"
