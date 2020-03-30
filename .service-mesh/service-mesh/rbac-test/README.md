@@ -1,5 +1,5 @@
-# Rolebindings and cluster roles for Service Mesh non-admin access
-The purpose of this test is to document what roles are required for a non-clusteradmin user to view their namespace's service mesh in the cluster's Service Mesh Control Plane.
+# Service Mesh non-cluster-admin access
+The purpose of this test is to document what roles are required for a non-cluster-admin user to view their namespace's mesh in the cluster's Service Mesh Control Plane.
 
 In this example, the user **tbox** is a developer in the namespace **bookinfo** and can view the Service Mesh Control Plane's Kiali, Prometheus, Grafana, and Jaeger in **istio-system**.
 
