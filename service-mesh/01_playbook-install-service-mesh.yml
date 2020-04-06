@@ -1,5 +1,5 @@
 ---
-- name: install service mesh
+- name: Install Service Mesh
   hosts: localhost
   gather_facts: no
   vars:
@@ -7,13 +7,13 @@
     - operator_src_dir: operator
   tasks:
 
-    - name: Install service mesh operator
+    - name: Install Service Mesh Operators from Automatic Subscription
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
         src: operator/01_ServiceMeshSubscription_Automatic.yml
 
-    - name: Get Service Mesh Operator
+    - name: Wait for InstallPlan name
       k8s_info:
         api_version: operators.coreos.com/v1alpha1
         name: servicemeshoperator
@@ -25,11 +25,16 @@
       delay: 5
       ignore_errors: true
 
-    - name: Debug installplan name
+    - name: Fail if InstallPlan name not found
+      fail:
+        msg: "Install plan failed to Complete"
+      when: subscription_info.resources[0].status.installplan.name is not defined or subscription_info.resources[0].status.installplan.name is not match("install-*")
+
+    - name: InstallPlan name
       debug:
         var: subscription_info.resources[0].status.installplan.name
 
-    - name: Get InstallPlan info
+    - name: Wait for InstallPlan to finish
       k8s_info:
         api_version: operators.coreos.com/v1alpha1
         kind: InstallPlan
@@ -41,44 +46,13 @@
       delay: 5
       ignore_errors: true
 
-    - name: Debug installplan status
-      debug:
-        var: installplan_info.resources[0].status.phase
-
-    - name: Fail if installplan was incomplete
+    - name: Fail if InstallPlan was incomplete
       fail:
         msg: "Install plan failed to Complete"
-      when: installplan_info.resources[0].status.phase != "Complete"
+      when: installplan_info.resources[0].status.phase is not defined or installplan_info.resources[0].status.phase != "Complete"
 
-    - name: Set subscriptions to manual
+    - name: Set Subscriptions to Manual Approval Strategy
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
         src: operator/02_ServiceMeshSubscription_Manual.yml
-
-- name: install service mesh control plane configs
-  hosts: localhost
-  gather_facts: no
-  vars:
-    - k8s_namespace: istio-system
-    - service_mesh_src_dir: service-mesh
-  tasks:
-    - name: Create a k8s namespace
-      k8s:
-        name: "{{ k8s_namespace }}"
-        api_version: v1
-        kind: Namespace
-        state: present
-
-    - name: Discover service mesh deployment files
-      find:
-        paths: "{{ service_mesh_src_dir }}"
-        patterns: "*.yml,*.yaml"
-      register: sm_files
-
-    - name: Deploy service mesh
-      k8s:
-        state: present
-        namespace: "{{ k8s_namespace }}"
-        src: "{{ item.path }}"
-      loop: "{{ sm_files.files }}"

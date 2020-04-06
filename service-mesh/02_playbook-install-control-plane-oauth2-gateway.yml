@@ -1,0 +1,43 @@
+- name: Install Oauth2 Gateway Service Mesh Control Plane
+  hosts: localhost
+  gather_facts: no
+  vars:
+    - control_plane_namespace: istio-system
+    - control_plane_src_dir: control-plane
+  tasks:
+    - name: Fail if client_id or client_secret is unset
+      fail:
+        msg: "Please pass client_id and client_secret vars for Okta configuration"
+      when: client_id is not defined or client_secret is not defined
+
+    - name: Create a k8s namespace
+      k8s:
+        name: "{{ control_plane_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy Service Mesh Control Plane
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        definition: "{{ lookup('template', '{{ control_plane_src_dir }}/oauth2-gateway/templates/ServiceMeshControlPlaneOauth2Proxy.j2') }}"
+
+    - name: Deploy Route
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        src: "{{ control_plane_src_dir }}/oauth2-gateway/APIRoute.yml"
+
+    - name: Discover common service mesh objects
+      find:
+        paths: "{{ control_plane_src_dir }}"
+        patterns: "*.yml,*.yaml"
+      register: sm_files
+
+    - name: Deploy common service mesh objects
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        src: "{{ item.path }}"
+      loop: "{{ sm_files.files }}"

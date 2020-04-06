@@ -1,0 +1,35 @@
+- name: Install Default Gateway Service Mesh Control Plane
+  hosts: localhost
+  gather_facts: no
+  vars:
+    - control_plane_namespace: istio-system
+    - control_plane_src_dir: control-plane
+  tasks:
+    - name: Create a k8s namespace
+      k8s:
+        name: "{{ control_plane_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy Service Mesh Control Plane and Route
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        src: "{{ item }}"
+      loop:
+        - "{{ control_plane_src_dir }}/default-gateway/ServiceMeshControlPlane.yml"
+        - "{{ control_plane_src_dir }}/default-gateway/APIRoute.yml"
+
+    - name: Discover common service mesh objects
+      find:
+        paths: "{{ control_plane_src_dir }}"
+        patterns: "*.yml,*.yaml"
+      register: sm_files
+
+    - name: Deploy common service mesh objects
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        src: "{{ item.path }}"
+      loop: "{{ sm_files.files }}"
