@@ -1,6 +1,64 @@
 ---
+- name: install service mesh
+  hosts: localhost
+  gather_facts: no
+  vars:
+    - k8s_namespace: openshift-operators
+    - operator_src_dir: operator
+  tasks:
+
+    - name: Install service mesh operator
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        src: operator/01_ServiceMeshSubscription_Automatic.yml
+
+    - name: Get Service Mesh Operator
+      k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        name: servicemeshoperator
+        kind: Subscription
+        namespace: "{{ k8s_namespace }}"
+      register: subscription_info
+      until: subscription_info.resources[0].status.installplan.name is defined and subscription_info.resources[0].status.installplan.name is match("install-*")
+      retries: 5
+      delay: 5
+      ignore_errors: true
+
+    - name: Debug installplan name
+      debug:
+        var: subscription_info.resources[0].status.installplan.name
+
+    - name: Get InstallPlan info
+      k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: InstallPlan
+        name: "{{ subscription_info.resources[0].status.installplan.name }}"
+        namespace: "{{ k8s_namespace }}"
+      register: installplan_info
+      until: installplan_info.resources[0].status.phase is defined and installplan_info.resources[0].status.phase == "Complete"
+      retries: 5
+      delay: 5
+      ignore_errors: true
+
+    - name: Debug installplan status
+      debug:
+        var: installplan_info.resources[0].status.phase
+
+    - name: Fail if installplan was incomplete
+      fail:
+        msg: "Install plan failed to Complete"
+      when: installplan_info.resources[0].status.phase != "Complete"
+
+    - name: Set subscriptions to manual
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        src: operator/02_ServiceMeshSubscription_Manual.yml
+
 - name: install service mesh control plane configs
   hosts: localhost
+  gather_facts: no
   vars:
     - k8s_namespace: istio-system
     - service_mesh_src_dir: service-mesh
