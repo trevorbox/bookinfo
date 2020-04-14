@@ -1,4 +1,4 @@
-# Example Service Mesh App for 1.0.10
+# Example Service Mesh App for v1.1
 
 ## Install bookinfo app & istio objects
 1. login
