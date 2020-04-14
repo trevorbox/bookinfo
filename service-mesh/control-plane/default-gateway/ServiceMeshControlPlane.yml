@@ -11,6 +11,7 @@ spec:
       istio-ingressgateway:
         autoscaleEnabled: false
     global:
+      controlPlaneSecurityEnabled: true
       disablePolicyChecks: false
       mtls:
         enabled: true

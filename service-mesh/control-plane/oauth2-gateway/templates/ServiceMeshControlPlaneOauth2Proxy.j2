@@ -18,7 +18,7 @@ spec:
         additionalContainers:
         - args:
           - --provider=oidc
-          - --redirect-url=https://api-istio-system.apps.cluster-ebe7.ebe7.sandbox1343.opentlc.com/oauth2/callback
+          - --redirect-url=https://api-istio-system.apps.cluster-8e5d.8e5d.sandbox354.opentlc.com/oauth2/callback
           - --oidc-issuer-url=https://dev-338970.okta.com/oauth2/default
           - --upstream=http://127.0.0.1:8080
           - '--email-domain=*'
@@ -92,6 +92,7 @@ spec:
           mountPath: /etc/oauth2-proxy/certs
     global:
       disablePolicyChecks: false
+      controlPlaneSecurityEnabled: true
       mtls:
         enabled: true
       proxy:
