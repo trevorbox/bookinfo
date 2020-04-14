@@ -8,10 +8,12 @@
   tasks:
 
     - name: Install Service Mesh Operators from Automatic Subscription
+      vars:
+        - approval_strategy: Automatic
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
-        src: operator/01_ServiceMeshSubscription_Automatic.yml
+        definition: "{{ lookup('template', 'operator/templates/ServiceMeshSubscription.j2') }}"
 
     - name: Wait for InstallPlan name
       k8s_info:
@@ -52,7 +54,9 @@
       when: installplan_info.resources[0].status.phase is not defined or installplan_info.resources[0].status.phase != "Complete"
 
     - name: Set Subscriptions to Manual Approval Strategy
+      vars:
+        - approval_strategy: Manual
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
-        src: operator/02_ServiceMeshSubscription_Manual.yml
+        definition: "{{ lookup('template', 'operator/templates/ServiceMeshSubscription.j2') }}"

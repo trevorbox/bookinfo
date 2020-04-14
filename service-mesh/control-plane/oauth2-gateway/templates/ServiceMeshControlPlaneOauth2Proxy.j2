@@ -9,8 +9,7 @@ spec:
       istio-egressgateway:
         autoscaleEnabled: false
       istio-ingressgateway:
-        autoscaleEnabled: false
-        ior_enabled: false
+        enabled: false
       oauth-ingressgateway:
         enabled: true
         autoscaleEnabled: false
@@ -18,14 +17,14 @@ spec:
         additionalContainers:
         - args:
           - --provider=oidc
-          - --redirect-url=https://api-istio-system.apps.cluster-8e5d.8e5d.sandbox354.opentlc.com/oauth2/callback
-          - --oidc-issuer-url=https://dev-338970.okta.com/oauth2/default
+          - --redirect-url={{ redirect_url }}
+          - --oidc-issuer-url={{ oidc_issuer_url }}
           - --upstream=http://127.0.0.1:8080
           - '--email-domain=*'
           - --client-id={{ client_id }}
           - --client-secret={{ client_secret }}
           - --pass-access-token=true
-          - --cookie-secret=GRerqX0kInomjzMYFr50wA==
+          - --cookie-secret={{ cookie_secret }}
           - --skip-provider-button=true
           - --http-address=0.0.0.0:8081
           env:

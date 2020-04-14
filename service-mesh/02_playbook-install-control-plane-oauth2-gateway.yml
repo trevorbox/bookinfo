@@ -4,6 +4,9 @@
   vars:
     - control_plane_namespace: istio-system
     - control_plane_src_dir: control-plane
+    - redirect_url: https://api-istio-system.apps.cluster-77f0.77f0.sandbox1435.opentlc.com/oauth2/callback
+    - oidc_issuer_url: https://dev-338970.okta.com/oauth2/default
+    - cookie_secret: GRerqX0kInomjzMYFr50wA==
   tasks:
     - name: Fail if client_id or client_secret is unset
       fail:

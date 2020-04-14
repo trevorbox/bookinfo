@@ -9,7 +9,7 @@ spec:
       istio-egressgateway:
         autoscaleEnabled: false
       istio-ingressgateway:
-        autoscaleEnabled: false
+        enabled: false
     global:
       controlPlaneSecurityEnabled: true
       disablePolicyChecks: false

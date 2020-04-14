@@ -5,7 +5,7 @@ metadata:
   name: elasticsearch-operator
 spec:
   channel: "4.3"
-  installPlanApproval: Manual
+  installPlanApproval: {{ approval_strategy | default("Automatic", true) }}
   name: elasticsearch-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -17,7 +17,7 @@ metadata:
   name: jaeger-product
 spec:
   channel: stable
-  installPlanApproval: Manual
+  installPlanApproval: {{ approval_strategy | default("Automatic", true) }}
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -29,7 +29,7 @@ metadata:
   name: kiali-ossm
 spec:
   channel: stable
-  installPlanApproval: Manual
+  installPlanApproval: {{ approval_strategy | default("Automatic", true) }}
   name: kiali-ossm
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -41,7 +41,7 @@ metadata:
   name: servicemeshoperator
 spec:
   channel: stable
-  installPlanApproval: Manual
+  installPlanApproval: {{ approval_strategy | default("Automatic", true) }}
   name: servicemeshoperator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
