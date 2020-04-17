@@ -32,7 +32,3 @@ cat <<EOF | mongo $MONGODB_HOST:$MONGODB_PORT -u bookinfo -p $BOOKINFO_PASSWORD 
 use test
 db.ratings.find({});
 EOF
-
-
-
-

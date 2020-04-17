@@ -90,6 +90,9 @@ spec:
           secretName: oauth2-proxy-tls
           mountPath: /etc/oauth2-proxy/certs
     global:
+      outboundTrafficPolicy:
+        #mode: REGISTRY_ONLY
+        mode: ALLOW_ANY
       disablePolicyChecks: false
       controlPlaneSecurityEnabled: true
       mtls:
