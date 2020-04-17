@@ -5,7 +5,7 @@
 MONGO_ADMIN_PASSWORD=redhat
 BOOKINFO_PASSWORD=redhat
 
-MONGODB_HOST=a6ed930fe446a4853a4f719ee8725eb6-1940319882.us-east-2.elb.amazonaws.com
+MONGODB_HOST=a3b305187b1ae441f877ba3e4a7d3577-1102734332.us-east-2.elb.amazonaws.com
 MONGODB_PORT=27017
 
 cat <<EOF | mongo $MONGODB_HOST:$MONGODB_PORT -u admin -p $MONGO_ADMIN_PASSWORD --authenticationDatabase admin
