@@ -8,10 +8,18 @@ spec:
     gateways:
       istio-egressgateway:
         autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
       istio-ingressgateway:
         enabled: false
       oauth-ingressgateway:
         enabled: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
         autoscaleEnabled: false
         #namespace: bookinfo
         additionalContainers:
@@ -96,11 +104,11 @@ spec:
         enabled: true
       proxy:
         resources:
-          limits:
-            cpu: 500m
-            memory: 128Mi
           requests:
             cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
             memory: 128Mi
     grafana:
       enabled: true
@@ -121,7 +129,17 @@ spec:
     pilot:
       autoscaleEnabled: false
       traceSampling: 100
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2048Mi
     tracing:
       enabled: true
       jaeger:
-        template: all-in-one
+        template: production-elasticsearch
+        elasticSearch:
+          nodeCount: 1
+          resources:
+            requests:
+              cpu: 1
+              memory: 16Gi
