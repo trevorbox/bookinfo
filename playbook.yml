@@ -38,12 +38,6 @@
         src: "{{ item.path }}"
       loop: "{{ app_files.files }}"
 
-    - name: Deploy ratings-v2 with mongodb configs
-      k8s:
-        state: present
-        namespace: "{{ k8s_namespace }}"
-        definition: "{{ lookup('template', '{{ app_src_dir }}/templates/bookinfo-ratings-v2.j2') }}"
-
     - name: Discover istio deployment files
       find:
         paths: "{{ istio_src_dir }}"
