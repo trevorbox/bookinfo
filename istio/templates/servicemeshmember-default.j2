@@ -4,5 +4,5 @@ metadata:
   name: default
 spec:
   controlPlaneRef:
-    name: oauth2-mtls-install
-    namespace: istio-system
+    name: {{ control_plane_name }}
+    namespace: {{ control_plane_namespace }}

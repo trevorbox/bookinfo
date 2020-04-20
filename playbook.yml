@@ -1,10 +1,16 @@
 ---
 - name: install bookinfo application
   hosts: localhost
+  gather_facts: false
   vars:
     - k8s_namespace: bookinfo
     - istio_src_dir: istio
     - app_src_dir: app
+    - control_plane_name: oauth2-mtls-install
+    - control_plane_namespace: istio-system
+    - bookinfo_password: redhat
+    - mongo_db_host: a3b305187b1ae441f877ba3e4a7d3577-1102734332.us-east-2.elb.amazonaws.com
+    - mongodb_port: 27017
   tasks:
     - name: Create a k8s namespace
       k8s:
@@ -13,10 +19,16 @@
         kind: Namespace
         state: present
 
+    - name: Opt into the Service Mesh Control Plane with ServiceMeshMember (your account needs the maistra-user role granted on the control plane to do this)
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/servicemeshmember-default.j2') }}"
+
     - name: Discover app deployment files
-      find:                             
-        paths: "{{ app_src_dir }}"    
-        patterns: "*.yml,*.yaml"        
+      find:
+        paths: "{{ app_src_dir }}"
+        patterns: "*.yml,*.yaml"
       register: app_files
 
     - name: Deploy bookinfo app
@@ -26,15 +38,21 @@
         src: "{{ item.path }}"
       loop: "{{ app_files.files }}"
 
+    - name: Deploy ratings-v2 with mongodb configs
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        definition: "{{ lookup('template', '{{ app_src_dir }}/templates/bookinfo-ratings-v2.j2') }}"
+
     - name: Discover istio deployment files
       find:
         paths: "{{ istio_src_dir }}"
         patterns: "*.yml,*.yaml"
       register: istio_files
-      
+
     - name: Deploy istio gateway, virtualservices, and destinationrules for bookinfo app
       k8s:
-        state: present                                                  
-        namespace: "{{ k8s_namespace }}"                                
+        state: present
+        namespace: "{{ k8s_namespace }}"
         src: "{{ item.path }}"
       loop: "{{ istio_files.files }}"
