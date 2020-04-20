@@ -116,21 +116,12 @@ spec:
         requests:
           cpu: 200m
           memory: 1Gi
-
-    prometheus:
-      enabled: true
-      resources:
-        requests:
-          cpu: 200m
-          memory: 1Gi
-
     kiali:
       enabled: true
       resources:
         requests:
           cpu: 200m
           memory: 1Gi
-
     mixer:
       policy:
         autoscaleEnabled: false
@@ -150,6 +141,12 @@ spec:
         requests:
           cpu: 500m
           memory: 2048Mi
+    prometheus:
+      enabled: true
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
     tracing:
       enabled: true
       jaeger:
