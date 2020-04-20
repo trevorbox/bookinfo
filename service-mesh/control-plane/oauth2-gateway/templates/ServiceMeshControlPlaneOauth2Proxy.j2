@@ -112,8 +112,25 @@ spec:
             memory: 128Mi
     grafana:
       enabled: true
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+
+    prometheus:
+      enabled: true
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+
     kiali:
       enabled: true
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+
     mixer:
       policy:
         autoscaleEnabled: false
@@ -136,10 +153,8 @@ spec:
     tracing:
       enabled: true
       jaeger:
-        template: production-elasticsearch
-        elasticSearch:
-          nodeCount: 1
-          resources:
-            requests:
-              cpu: 1
-              memory: 16Gi
+        template: all-in-one
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
