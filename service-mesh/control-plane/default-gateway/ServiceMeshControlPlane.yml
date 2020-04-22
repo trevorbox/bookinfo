@@ -11,6 +11,9 @@ spec:
       istio-ingressgateway:
         enabled: false
     global:
+      outboundTrafficPolicy:
+        mode: REGISTRY_ONLY
+        #mode: ALLOW_ANY
       controlPlaneSecurityEnabled: true
       disablePolicyChecks: false
       mtls:
