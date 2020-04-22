@@ -5,6 +5,56 @@ metadata:
 spec:
   version: v1.1
   istio:
+    global:
+      controlPlaneSecurityEnabled: true
+      disablePolicyChecks: false
+      mtls:
+        enabled: true
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+    grafana:
+      enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+    kiali:
+      enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    mixer:
+      policy:
+        autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+      telemetry:
+        autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1G
+    pilot:
+      autoscaleEnabled: false
+      traceSampling: 100
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+    tracing:
+      enabled: true
+      jaeger:
+        template: all-in-one
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
     gateways:
       istio-egressgateway:
         enabled: false
@@ -93,53 +143,3 @@ spec:
         - name: oauth2-proxy-tls
           secretName: oauth2-proxy-tls
           mountPath: /etc/oauth2-proxy/certs
-          global:
-            controlPlaneSecurityEnabled: true
-            disablePolicyChecks: false
-            mtls:
-              enabled: true
-            proxy:
-              resources:
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
-          grafana:
-            enabled: true
-            resources:
-              requests:
-                cpu: 10m
-                memory: 128Mi
-          kiali:
-            enabled: true
-            resources:
-              requests:
-                cpu: 100m
-                memory: 128Mi
-          mixer:
-            policy:
-              autoscaleEnabled: false
-              resources:
-                requests:
-                  cpu: 10m
-                  memory: 128Mi
-            telemetry:
-              autoscaleEnabled: false
-              resources:
-                requests:
-                  cpu: 100m
-                  memory: 1G
-          pilot:
-            autoscaleEnabled: false
-            traceSampling: 100
-            resources:
-              requests:
-                cpu: 10m
-                memory: 128Mi
-          tracing:
-            enabled: true
-            jaeger:
-              template: all-in-one
-              resources:
-                requests:
-                  cpu: 10m
-                  memory: 128Mi
