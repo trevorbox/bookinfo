@@ -12,6 +12,10 @@ spec:
         autoscaleEnabled: false
         enabled: true
         ior_enabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
     global:
       controlPlaneSecurityEnabled: true
       disablePolicyChecks: false
@@ -19,32 +23,46 @@ spec:
         enabled: true
       proxy:
         resources:
-          limits:
-            cpu: 500m
-            memory: 128Mi
           requests:
             cpu: 100m
             memory: 128Mi
     grafana:
       enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
     kiali:
       enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
     mixer:
       policy:
         autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
       telemetry:
         autoscaleEnabled: false
         resources:
-          limits:
-            cpu: 500m
-            memory: 4G
           requests:
             cpu: 100m
             memory: 1G
     pilot:
       autoscaleEnabled: false
       traceSampling: 100
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
     tracing:
       enabled: true
       jaeger:
         template: all-in-one
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi

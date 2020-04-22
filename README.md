@@ -20,3 +20,28 @@ ansible-playbook playbook.yml
 ## Helpful docs
 - [OCP 4.3 Service Mesh Example App](https://docs.openshift.com/container-platform/4.3/service_mesh/service_mesh_day_two/ossm-example-bookinfo.html)
 - [Maistra mesh-wide mTLS](https://maistra.io/docs/examples/mesh-wide_mtls/)
+
+## Using the ServiceMeshMember functionality to opt-into the Mesh
+
+In this example, we will assume the following:
+- The Control Plane called **basic-install** was installed in the *istio-system* namespace
+- We want to allow the user **tbox** to opt-in ANY new namespaces into the mesh
+
+Instructions:
+1. After the mesh is created, a user with the `admin` role in the Control Plane *istio-system* would assign the `mesh-user` role to the developer **tbox**
+```
+oc policy add-role-to-user -n istio-system --role-namespace istio-system mesh-user tbox
+```
+2. User **tbox** can then create a ServiceMeshMember in the namespace *bookinfo*
+```
+oc apply -n bookinfo -f - <<EOF
+apiVersion: maistra.io/v1
+kind: ServiceMeshMember
+metadata:
+  name: default
+spec:
+  controlPlaneRef:
+    namespace: istio-system
+    name: basic-install
+EOF
+```
