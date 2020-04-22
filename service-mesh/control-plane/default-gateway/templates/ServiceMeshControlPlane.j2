@@ -1,15 +1,17 @@
 apiVersion: maistra.io/v1
 kind: ServiceMeshControlPlane
 metadata:
-  name: mtls-install
+  name: {{ control_plane_name }}
 spec:
   version: v1.1
   istio:
     gateways:
       istio-egressgateway:
-        autoscaleEnabled: false
-      istio-ingressgateway:
         enabled: false
+      istio-ingressgateway:
+        autoscaleEnabled: false
+        enabled: true
+        ior_enabled: false
     global:
       controlPlaneSecurityEnabled: true
       disablePolicyChecks: false
