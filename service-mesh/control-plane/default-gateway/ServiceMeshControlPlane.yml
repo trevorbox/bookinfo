@@ -9,7 +9,7 @@ spec:
       istio-egressgateway:
         autoscaleEnabled: false
       istio-ingressgateway:
-        enabled: false
+        enabled: true
     global:
       outboundTrafficPolicy:
         mode: REGISTRY_ONLY
