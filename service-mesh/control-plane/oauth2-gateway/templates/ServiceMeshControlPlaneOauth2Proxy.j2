@@ -1,7 +1,7 @@
 apiVersion: maistra.io/v1
 kind: ServiceMeshControlPlane
 metadata:
-  name: oauth2-mtls-install
+  name: {{ control_plane_name }}
 spec:
   version: v1.1
   istio:

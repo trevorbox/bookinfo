@@ -24,8 +24,9 @@ ansible-playbook playbook.yml
 ## Using the ServiceMeshMember functionality to opt-into the Mesh
 
 In this example, we will assume the following:
-- The Control Plane called **basic-install** was installed in the *istio-system* namespace
+- The Control Plane called **mtls-install** was installed in the *istio-system* namespace
 - We want to allow the user **tbox** to opt-in ANY new namespaces into the mesh
+- User **tbox** has at least `edit` role on the namespace *bookinfo* (the namespace to add to the mesh)
 
 Instructions:
 1. After the mesh is created, a user with the `admin` role in the Control Plane *istio-system* would assign the `mesh-user` role to the developer **tbox**
@@ -42,6 +43,6 @@ metadata:
 spec:
   controlPlaneRef:
     namespace: istio-system
-    name: basic-install
+    name: mtls-install
 EOF
 ```

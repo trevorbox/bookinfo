@@ -7,6 +7,7 @@
     - redirect_url: https://api-istio-system.apps.cluster-77f0.77f0.sandbox1435.opentlc.com/oauth2/callback
     - oidc_issuer_url: https://dev-338970.okta.com/oauth2/default
     - cookie_secret: GRerqX0kInomjzMYFr50wA==
+    - control_plane_name: oauth2-mtls-install
   tasks:
     - name: Fail if client_id or client_secret is unset
       fail:
@@ -44,3 +45,15 @@
         namespace: "{{ control_plane_namespace }}"
         src: "{{ item.path }}"
       loop: "{{ sm_files.files }}"
+
+    - name: Wait for successful deployment of Control Plane
+      k8s_info:
+        api_version: maistra.io/v1
+        name: "{{ control_plane_name }}"
+        kind: ServiceMeshControlPlane
+        namespace: "{{ control_plane_namespace }}"
+      register: control_plane_info
+      until: control_plane_info.resources[0].status.annotations.readyComponentCount is defined and control_plane_info.resources[0].status.annotations.readyComponentCount == "9/9"
+      retries: 10
+      delay: 30
+      ignore_errors: true
