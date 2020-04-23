@@ -6,9 +6,9 @@ MONGO_ADMIN_PASSWORD=redhat
 BOOKINFO_PASSWORD=redhat
 
 MONGODB_HOST=istio-ingressgateway-istio-system-mongodb.apps.cluster-77f0.77f0.sandbox1435.opentlc.com
-MONGODB_PORT=443
+MONGODB_PORT=80
 
-cat <<EOF | mongo --ssl --sslAllowInvalidCertificates $MONGODB_HOST:$MONGODB_PORT -u admin -p $MONGO_ADMIN_PASSWORD --authenticationDatabase admin
+cat <<EOF | mongo $MONGODB_HOST:$MONGODB_PORT -u admin -p $MONGO_ADMIN_PASSWORD --authenticationDatabase admin
 use test
 db.createUser(
    {

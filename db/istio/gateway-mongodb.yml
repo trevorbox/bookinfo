@@ -2,6 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: mongodb
+  namespace: mongodb
 spec:
   selector:
     istio: ingressgateway
@@ -9,9 +10,13 @@ spec:
     - hosts:
         - '*'
       port:
-        name: tls-mongo
-        number: 443
-        protocol: TLS
-      tls:
-        credentialName: mongodb-cert
-        mode: SIMPLE
+        name: mongo
+        number: 8080
+        protocol: mongo
+      #port:
+      #  name: tls-mongo
+      #  number: 443
+      #  protocol: TLS
+#      tls:
+#        credentialName: mongodb-cert
+#        mode: SIMPLE
