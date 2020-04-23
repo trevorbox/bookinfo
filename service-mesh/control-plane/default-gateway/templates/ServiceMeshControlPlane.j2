@@ -16,6 +16,31 @@ spec:
           requests:
             cpu: 100m
             memory: 128Mi
+      istio-ingressgateway-team2:
+        autoscaleEnabled: false
+        enabled: true
+        ior_enabled: false
+        labels:
+          app: istio-ingressgateway-team2
+          istio: ingressgateway-team2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        type: ClusterIP
+        ports:
+        - port: 15020
+          targetPort: 15020
+          name: status-port
+        - port: 80
+          targetPort: 8080
+          name: http2
+        - port: 443
+          targetPort: 8443
+          name: https
+        - port: 15443
+          targetPort: 15443
+          name: tls
     global:
       controlPlaneSecurityEnabled: true
       disablePolicyChecks: false
