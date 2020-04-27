@@ -10,7 +10,7 @@
     - control_plane_namespace: istio-system
     - mongodb_control_plane_namespace: istio-system-mongodb
     - bookinfo_password: redhat
-    - mongodb_port: 27017
+    - mongodb_port: 27018
   tasks:
     - name: Create a k8s namespace
       k8s:
@@ -66,3 +66,35 @@
         namespace: "{{ k8s_namespace }}"
         src: "{{ item.path }}"
       loop: "{{ istio_files.files }}"
+
+    - name: Get API Route Info in control plane namespace
+      k8s_info:
+        api_version: route.openshift.io/v1
+        name: api
+        kind: Route
+        namespace: "{{ control_plane_namespace }}"
+      register: route_info
+
+    - name: Create Gateway in control plane namespace
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/gateway-bookinfo-gateway.j2') }}"
+      vars:
+        route_hostname: "{{ route_info.resources[0].spec.host }}"
+
+    - name: Create Virtual Service for productpage
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/virtualservice-bookinfo.j2') }}"
+      vars:
+        route_hostname: "{{ route_info.resources[0].spec.host }}"
+
+    - name: Create ServiceEntry
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/serviceentry-mongo.j2') }}"
+      vars:
+        mongodb_host: "{{ mongo_service_info.resources[0].status.loadBalancer.ingress[0].hostname }}"

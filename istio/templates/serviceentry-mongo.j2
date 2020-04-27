@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: mongo
+spec:
+  hosts:
+  - {{ mongodb_host }}
+  ports:
+  - number: {{ mongodb_port }}
+    name: tls
+    protocol: TLS
+  resolution: DNS
