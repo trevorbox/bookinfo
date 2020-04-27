@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: no
   vars:
-    - control_plane_namespace: istio-system
+    - control_plane_namespace: istio-system-mongodb
     - control_plane_src_dir: control-plane
   tasks:
     - name: Create a k8s namespace
@@ -19,7 +19,6 @@
         src: "{{ item }}"
       loop:
         - "{{ control_plane_src_dir }}/default-gateway/ServiceMeshControlPlane.yml"
-        - "{{ control_plane_src_dir }}/default-gateway/APIRoute.yml"
 
     - name: Discover common service mesh objects
       find:
