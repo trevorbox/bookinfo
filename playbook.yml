@@ -1,5 +1,5 @@
 ---
-- name: install bookinfo application
+- name: Install bookinfo application with mongodb TLS connection
   hosts: localhost
   gather_facts: false
   vars:
@@ -8,8 +8,8 @@
     - app_src_dir: app
     - control_plane_name: oauth2-mtls-install
     - control_plane_namespace: istio-system
+    - mongodb_control_plane_namespace: istio-system-mongodb
     - bookinfo_password: redhat
-    - mongo_db_host: a3b305187b1ae441f877ba3e4a7d3577-1102734332.us-east-2.elb.amazonaws.com
     - mongodb_port: 27017
   tasks:
     - name: Create a k8s namespace
@@ -38,11 +38,21 @@
         src: "{{ item.path }}"
       loop: "{{ app_files.files }}"
 
+    - name: Get LoadBalancer ingress hostname
+      k8s_info:
+        api_version: v1
+        name: mongo-ingressgateway
+        kind: Service
+        namespace: "{{ mongodb_control_plane_namespace }}"
+      register: mongo_service_info
+
     - name: Deploy ratings-v2 with mongodb configs
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
         definition: "{{ lookup('template', '{{ app_src_dir }}/templates/bookinfo-ratings-v2.j2') }}"
+      vars:
+        mongodb_url: "mongodb://bookinfo:{{ bookinfo_password }}@{{ mongo_service_info.resources[0].status.loadBalancer.ingress[0].hostname }}:{{ mongodb_port }}/test?authSource=test&ssl=true"
 
     - name: Discover istio deployment files
       find:

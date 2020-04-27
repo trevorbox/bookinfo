@@ -59,7 +59,7 @@ spec:
           # - name: MYSQL_DB_PASSWORD
           #  value: password
           - name: MONGO_DB_URL
-            value: mongodb://bookinfo:{{ bookinfo_password }}@{{ mongo_db_host }}:{{ mongodb_port }}/test?authSource=test
+            value: {{ mongodb_url }}
         ports:
         - containerPort: 9080
 ---
