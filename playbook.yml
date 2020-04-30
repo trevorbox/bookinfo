@@ -6,11 +6,8 @@
     - k8s_namespace: bookinfo
     - istio_src_dir: istio
     - app_src_dir: app
-    - control_plane_name: oauth2-mtls-install
+    - control_plane_name: mtls-install
     - control_plane_namespace: istio-system
-    - bookinfo_password: redhat
-    - mongo_db_host: a3b305187b1ae441f877ba3e4a7d3577-1102734332.us-east-2.elb.amazonaws.com
-    - mongodb_port: 27017
   tasks:
     - name: Create a k8s namespace
       k8s:
