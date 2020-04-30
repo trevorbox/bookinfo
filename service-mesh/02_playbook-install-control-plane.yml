@@ -2,7 +2,8 @@
   hosts: localhost
   gather_facts: no
   vars:
-    - control_plane_namespace: istio-system-mongodb
+    - control_plane_name: mtls-install
+    - control_plane_namespace: istio-system
     - control_plane_src_dir: control-plane
   tasks:
     - name: Create a k8s namespace
@@ -19,6 +20,7 @@
         src: "{{ item }}"
       loop:
         - "{{ control_plane_src_dir }}/default-gateway/ServiceMeshControlPlane.yml"
+        - "{{ control_plane_src_dir }}/default-gateway/APIRoute.yml"
 
     - name: Discover common service mesh objects
       find:
@@ -32,3 +34,15 @@
         namespace: "{{ control_plane_namespace }}"
         src: "{{ item.path }}"
       loop: "{{ sm_files.files }}"
+
+    - name: Wait for successful deployment of Control Plane
+      k8s_info:
+        api_version: maistra.io/v1
+        name: "{{ control_plane_name }}"
+        kind: ServiceMeshControlPlane
+        namespace: "{{ control_plane_namespace }}"
+      register: control_plane_info
+      until: control_plane_info.resources[0].status.annotations.readyComponentCount is defined and control_plane_info.resources[0].status.annotations.readyComponentCount == "9/9"
+      retries: 10
+      delay: 30
+      ignore_errors: true
