@@ -35,15 +35,32 @@
         src: "{{ item.path }}"
       loop: "{{ app_files.files }}"
 
-    - name: Discover istio deployment files
-      find:
-        paths: "{{ istio_src_dir }}"
-        patterns: "*.yml,*.yaml"
-      register: istio_files
+    - name: Get API Route Info in control plane namespace
+      k8s_info:
+        api_version: route.openshift.io/v1
+        name: api
+        kind: Route
+        namespace: "{{ control_plane_namespace }}"
+      register: route_info
 
-    - name: Deploy istio gateway, virtualservices, and destinationrules for bookinfo app
+    - name: Deploy istio gateway in control plane namespace
+      k8s:
+        state: present
+        namespace: "{{ control_plane_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/gateway-default.j2') }}"
+      vars:
+        route_hostname: "{{ route_info.resources[0].spec.host }}"
+        
+    - name: Deploy destinationrules in app namespace
       k8s:
         state: present
         namespace: "{{ k8s_namespace }}"
-        src: "{{ item.path }}"
-      loop: "{{ istio_files.files }}"
+        src: "{{ istio_src_dir }}/destinationrules-bookinfo.yml"
+
+    - name: Deploy virtualservice in app namespace
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        definition: "{{ lookup('template', '{{ istio_src_dir }}/templates/virtualservice-bookinfo.j2') }}"
+      vars:
+        route_hostname: "{{ route_info.resources[0].spec.host }}"
