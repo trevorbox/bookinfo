@@ -6,7 +6,7 @@
     - k8s_namespace: bookinfo
     - istio_src_dir: istio
     - app_src_dir: app
-    - control_plane_name: mtls-install
+    - control_plane_name: basic-install
     - control_plane_namespace: istio-system
   tasks:
     - name: Create a k8s namespace
